@@ -8,20 +8,20 @@ class Paddle:
 
     def __init__(
             self,
-            width=PADDLE_WIDTH, height=PADDLE_INITIAL_LENGTH,
+            width=PADDLE_WIDTH, height=PADDLE_INITIAL_HEIGHT,
             color=arcade.color.WHITE,
             x=0, y=SCREEN_HEIGHT // 2,
-            velocity_x=0, velocity_y=0):
+            velocity_y=0):
         self.width = width
         self.height = height
         self.color = color
         self.x = x
         self.y = y
-        self.velocity_x = velocity_x
         self.velocity_y = velocity_y
 
     def draw(self):
         arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, self.color)
+        self.velocity_y = 0
 
 
 class Ball:
@@ -41,6 +41,7 @@ class Ball:
 
     def update_velocity_after_hit(self, paddle):
         self.reverse_velocity_x()
+        self.velocity_x *= HIT_ACCELERATION
         self.velocity_y += paddle.velocity_y // 4         # Todo: Change this to a sloped delta with max of 10 or smth
 
     def reverse_velocity_x(self):
