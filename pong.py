@@ -60,6 +60,9 @@ class MyGame(arcade.Window):
         self.paddle_p1.draw()
         self.paddle_p2.draw()
 
+        if DEBUG:
+            self.debug_output()
+
 
     def update(self, delta_time):
         for ball in self.ball_list:
@@ -85,8 +88,6 @@ class MyGame(arcade.Window):
         self.paddle_p2.y = y
         self.paddle_p2.velocity_y = dy
 
-
-
     def on_mouse_press(self, x, y, button, key_modifiers):
         pass
 
@@ -94,6 +95,9 @@ class MyGame(arcade.Window):
     def on_mouse_release(self, x, y, button, key_modifiers):
         pass
 
+    def debug_output(self):
+        arcade.draw_text(f'Paddle2 velocity: {self.paddle_p2.velocity_y}', 800, 20, arcade.color.WHITE, 14)
+        arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
 
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)
