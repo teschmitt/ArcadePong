@@ -5,7 +5,7 @@ from include.game_constants import *
 from include.game_objects import Paddle, Ball
 
 
-def make_ball():
+def make_ball(paddles=[]):
     vel_x = random.randrange(-400, 401) / 100
     if vel_x > 0:
         vel_x += 2
@@ -13,7 +13,8 @@ def make_ball():
         vel_x -= 2
     ball = Ball(
         velocity_x = vel_x,
-        velocity_y = random.randrange(-500, 501) / 100
+        velocity_y = random.randrange(-500, 501) / 100,
+        paddles=paddles
     )
     return ball
 
@@ -38,30 +39,13 @@ class MyGame(arcade.Window):
                     b.x < -BALL_KILL_THRESH:
                 yield b
 
-    def check_hits(self, paddles, balls):
-        hits = []
-        for p in paddles:
-            p_halfwidth = p.width // 2
-            p_halfheight = p.height // 2
-            for b in balls:
-                # check for hit to the right or left paddle
-                if (p.x > b.x and b.velocity_x > 0 and \
-                        b.x + b.size > p.x - p_halfwidth and \
-                        b.y + b.size < p.y + p_halfheight and \
-                        b.y - b.size > p.y - p_halfheight) \
-                    or (p.x < b.x and b.velocity_x < 0 and \
-                        b.x - b.size < p.x + p_halfwidth and \
-                        b.y + b.size < p.y + p_halfheight and \
-                        b.y - b.size > p.y - p_halfheight):
-                    hits.append((b, p))
-        return hits
-
 
     def setup(self):
-        self.ball_list = [make_ball() for _ in range(5)]
         self.paddle_p1 = Paddle(color=arcade.color.RED, x=PADDLE_WIDTH // 2)
         self.paddle_p2 = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH - (PADDLE_WIDTH // 2))
-        self.object_list = [self.paddle_p1, self.paddle_p2] + self.ball_list
+        paddles = [self.paddle_p1, self.paddle_p2]
+        self.ball_list = [make_ball(paddles=paddles) for _ in range(5)]
+        self.object_list = paddles + self.ball_list
 
 
     def on_draw(self):
@@ -82,11 +66,6 @@ class MyGame(arcade.Window):
             self.ball_list.remove(b)
             self.object_list.remove(b)
 
-        hits = self.check_hits([self.paddle_p1, self.paddle_p2], self.ball_list)
-        if len(hits) > 0:
-            for (ball, paddle) in hits:
-                ball.update_velocity_after_hit(paddle)
-
 
     def on_key_press(self, key, key_modifiers):
         pass
@@ -97,8 +76,7 @@ class MyGame(arcade.Window):
 
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.paddle_p2.y = y
-        self.paddle_p2.velocity_y = dy
+        self.paddle_p2.move_to(y, dy)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         pass
