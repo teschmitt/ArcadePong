@@ -42,8 +42,12 @@ class MyGame(arcade.Window):
 
 
     def setup(self):
-        self.human_player = HumanPlayer(paddle=Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN))
-        self.computer_opponent = ComputerPlayer(paddle=Paddle(color=arcade.color.RED, x=PADDLE_WIDTH//2+PADDLE_MARGIN))
+        human_paddle = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN)
+        computer_paddle = Paddle(color=arcade.color.RED, x=PADDLE_WIDTH//2+PADDLE_MARGIN)
+
+        self.human_player = HumanPlayer(paddle=human_paddle)
+        self.computer_opponent = ComputerPlayer(paddle=computer_paddle)
+
         paddles = [self.human_player.paddle, self.computer_opponent.paddle]
         self.ball_list = [make_ball(paddles=paddles) for _ in range(5)]
         self.object_list = paddles + self.ball_list
@@ -62,6 +66,8 @@ class MyGame(arcade.Window):
     def update(self, delta_time):
         for ball in self.ball_list:
             ball.update()
+
+        self.computer_opponent.react(self.ball_list)
 
         for b in self.get_kills(self.ball_list):
             self.ball_list.remove(b)

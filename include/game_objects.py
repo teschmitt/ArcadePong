@@ -58,7 +58,7 @@ class Paddle:
         arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, self.color)
         self.velocity_y = 0
 
-    def move_to(self, y, dy):
+    def move_to(self, y, dy=0):
         self.y = y
         self.velocity_y = dy
 

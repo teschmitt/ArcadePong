@@ -1,5 +1,7 @@
 import random
 import arcade
+import math
+from operator import itemgetter
 
 from .game_constants import *
 
@@ -31,5 +33,31 @@ class HumanPlayer(Player):
 
 class ComputerPlayer(Player):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, speed=DEFAULT_OPPONENT_SPEED, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.speed = speed
+
+    @property
+    def speed(self):
+        return self.__speed
+    @speed.setter
+    def speed(self, speed):
+        self.__speed = speed
+
+    def get_nearest_ball(self, ball_list):
+        # get distance of all balls moving towards paddle
+        # store them as a list of tuples (Ball, distance from paddle middle)
+        c = [(b, math.sqrt((b.x - self.paddle.x)**2 + (b.y - self.paddle.y)**2)) for b in ball_list if b.velocity_x < 0]
+        if len(c) > 0:
+            nearest_ball = sorted(c, key=itemgetter(1))[0][0]
+            return nearest_ball
+        else:
+            return ball_list[0]
+
+    def react(self, ball_list):
+        if len(ball_list) > 0:
+            nearest_ball = self.get_nearest_ball(ball_list)
+            self.paddle.move_to(y=nearest_ball.y)
+        else:
+            self.paddle.move_to(y=0)
+
