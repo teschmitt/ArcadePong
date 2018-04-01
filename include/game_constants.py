@@ -6,6 +6,7 @@ BALL_KILL_THRESH = BALL_SIZE // 2    # when do we kill the ball if it flies past
 
 PADDLE_INITIAL_HEIGHT = 300
 PADDLE_WIDTH = 30
+PADDLE_MARGIN = 10
 
 HIT_ACCELERATION = 1.1
 

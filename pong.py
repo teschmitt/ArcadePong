@@ -3,6 +3,7 @@ import arcade
 
 from include.game_constants import *
 from include.game_objects import Paddle, Ball
+from include.game_players import HumanPlayer, ComputerPlayer
 
 
 def make_ball(paddles=[]):
@@ -29,8 +30,8 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.AMAZON)
 
         self.ball_list = []
-        self.paddle_p1 = None
-        self.paddle_p2 = None
+        self.computer_opponent = None
+        self.human_player = None
         self.object_list = []
 
     def get_kills (self, balls):
@@ -41,9 +42,9 @@ class MyGame(arcade.Window):
 
 
     def setup(self):
-        self.paddle_p1 = Paddle(color=arcade.color.RED, x=PADDLE_WIDTH // 2)
-        self.paddle_p2 = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH - (PADDLE_WIDTH // 2))
-        paddles = [self.paddle_p1, self.paddle_p2]
+        self.human_player = HumanPlayer(paddle=Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN))
+        self.computer_opponent = ComputerPlayer(paddle=Paddle(color=arcade.color.RED, x=PADDLE_WIDTH//2+PADDLE_MARGIN))
+        paddles = [self.human_player.paddle, self.computer_opponent.paddle]
         self.ball_list = [make_ball(paddles=paddles) for _ in range(5)]
         self.object_list = paddles + self.ball_list
 
@@ -76,7 +77,7 @@ class MyGame(arcade.Window):
 
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.paddle_p2.move_to(y, dy)
+        self.human_player.paddle.move_to(y, dy)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         pass
@@ -86,7 +87,7 @@ class MyGame(arcade.Window):
         pass
 
     def debug_output(self):
-        arcade.draw_text(f'Paddle2 velocity: {self.paddle_p2.velocity_y}', 800, 20, arcade.color.WHITE, 14)
+        # arcade.draw_text(f'Paddle2 velocity: {self.human_player.paddle.velocity_y}', 800, 20, arcade.color.WHITE, 14)
         arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
 
 def main():
