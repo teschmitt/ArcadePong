@@ -13,15 +13,14 @@ def make_ball(paddles=[]):
     else:
         vel_x -= 2
     ball = Ball(
-        velocity_x = vel_x,
-        velocity_y = random.randrange(-500, 501) / 100,
+        velocity_x=vel_x,
+        velocity_y=random.randrange(-500, 501) / 100,
         paddles=paddles
     )
     return ball
 
 
 class MyGame(arcade.Window):
-
 
     def __init__(self, width, height):
         super().__init__(width, height, 'ArcadePong!')
@@ -34,12 +33,11 @@ class MyGame(arcade.Window):
         self.human_player = None
         self.object_list = []
 
-    def get_kills (self, balls):
+    def get_kills(self, balls):
         for b in balls:
             if b.x > SCREEN_WIDTH + BALL_KILL_THRESH or \
                     b.x < -BALL_KILL_THRESH:
                 yield b
-
 
     def setup(self):
         human_paddle = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN)
@@ -52,7 +50,6 @@ class MyGame(arcade.Window):
         self.ball_list = [make_ball(paddles=paddles) for _ in range(5)]
         self.object_list = paddles + self.ball_list
 
-
     def on_draw(self):
         arcade.start_render()
 
@@ -61,7 +58,6 @@ class MyGame(arcade.Window):
 
         if DEBUG:
             self.debug_output()
-
 
     def update(self, delta_time):
         for ball in self.ball_list:
@@ -73,14 +69,11 @@ class MyGame(arcade.Window):
             self.ball_list.remove(b)
             self.object_list.remove(b)
 
-
     def on_key_press(self, key, key_modifiers):
         pass
 
-
     def on_key_release(self, key, key_modifiers):
         pass
-
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.human_player.paddle.move_to(y, dy)
@@ -88,13 +81,13 @@ class MyGame(arcade.Window):
     def on_mouse_press(self, x, y, button, key_modifiers):
         pass
 
-
     def on_mouse_release(self, x, y, button, key_modifiers):
         pass
 
     def debug_output(self):
         # arcade.draw_text(f'Paddle2 velocity: {self.human_player.paddle.velocity_y}', 800, 20, arcade.color.WHITE, 14)
         arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
+
 
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)

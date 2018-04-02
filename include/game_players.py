@@ -15,6 +15,7 @@ class Player:
     @property
     def paddle(self):
         return self.__paddle
+
     @paddle.setter
     def paddle(self, paddle):
         self.__paddle = paddle
@@ -22,14 +23,17 @@ class Player:
     @property
     def points(self):
         return self.__points
+
     @points.setter
     def points(self, points):
         self.__points = points
+
 
 class HumanPlayer(Player):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
 
 class ComputerPlayer(Player):
 
@@ -40,6 +44,7 @@ class ComputerPlayer(Player):
     @property
     def speed(self):
         return self.__speed
+
     @speed.setter
     def speed(self, speed):
         self.__speed = speed
@@ -52,6 +57,9 @@ class ComputerPlayer(Player):
             nearest_ball = sorted(c, key=itemgetter(1))[0][0]
             return nearest_ball
         else:
+            # kinda lazy right now
+            # if there are no balls moving towards its paddle,
+            # it will just follow ball nr 0
             return ball_list[0]
 
     def react(self, ball_list):
@@ -60,4 +68,3 @@ class ComputerPlayer(Player):
             self.paddle.move_to(y=nearest_ball.y)
         else:
             self.paddle.move_to(y=0)
-
