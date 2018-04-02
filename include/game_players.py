@@ -56,15 +56,29 @@ class ComputerPlayer(Player):
         if len(c) > 0:
             nearest_ball = sorted(c, key=itemgetter(1))[0][0]
             return nearest_ball
+
+    def get_impact_position(self, ball):
+        # curent_y = self.paddle.y
+        dx = ball.x - ball.size - self.paddle.x
+        dy = abs(dx//ball.velocity_x) * ball.velocity_y
+        return int(ball.y + dy)
+
+    def get_move_distance(self, impact_pos):
+        dist_y = impact_pos - self.paddle.y
+        if dist_y > 10:
+            return self.speed
+        elif dist_y < -10:
+            return -self.speed
         else:
-            # kinda lazy right now
-            # if there are no balls moving towards its paddle,
-            # it will just follow ball nr 0
-            return ball_list[0]
+            return 0
 
     def react(self, ball_list):
-        if len(ball_list) > 0:
+        if ball_list:
             nearest_ball = self.get_nearest_ball(ball_list)
-            self.paddle.move_to(y=nearest_ball.y)
-        else:
-            self.paddle.move_to(y=0)
+            if nearest_ball:
+                self.impact_pos = self.get_impact_position(ball=nearest_ball)
+            else:
+                self.impact_pos = SCREEN_HEIGHT // 2
+        move_distance = self.get_move_distance(impact_pos=self.impact_pos)
+        self.paddle.move_to(y=self.paddle.y + move_distance)
+

@@ -47,7 +47,7 @@ class MyGame(arcade.Window):
         self.computer_opponent = ComputerPlayer(paddle=computer_paddle)
 
         paddles = [self.human_player.paddle, self.computer_opponent.paddle]
-        self.ball_list = [make_ball(paddles=paddles) for _ in range(5)]
+        self.ball_list = [make_ball(paddles=paddles) for _ in range(1)]
         self.object_list = paddles + self.ball_list
 
     def on_draw(self):
@@ -87,6 +87,7 @@ class MyGame(arcade.Window):
     def debug_output(self):
         # arcade.draw_text(f'Paddle2 velocity: {self.human_player.paddle.velocity_y}', 800, 20, arcade.color.WHITE, 14)
         arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
+        arcade.draw_text(f'Calc impact pos: {self.computer_opponent.impact_pos}', 800, 20, arcade.color.WHITE, 14)
 
 
 def main():
