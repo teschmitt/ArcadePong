@@ -29,15 +29,26 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.AMAZON)
 
         self.ball_list = []
+        self.paddle_list = []
+        self.object_list = []
         self.computer_opponent = None
         self.human_player = None
-        self.object_list = []
 
     def get_kills(self, balls):
         for b in balls:
             if b.x > SCREEN_WIDTH + BALL_KILL_THRESH or \
                     b.x < -BALL_KILL_THRESH:
                 yield b
+
+    def award_point(self, ball):
+        if ball.x <= BALL_KILL_THRESH:
+            self.human_player.points += 1
+        else:
+            self.computer_opponent.points += 1
+
+    def draw_points(self):
+        arcade.draw_text(f'{self.human_player.points}', SCREEN_WIDTH-POINTS_DISPLAY_X_MARGIN, POINTS_DISPLAY_Y, arcade.color.WHITE, 28)
+        arcade.draw_text(f'{self.computer_opponent.points}', POINTS_DISPLAY_X_MARGIN, POINTS_DISPLAY_Y, arcade.color.WHITE, 28)
 
     def setup(self):
         human_paddle = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN)
@@ -46,15 +57,16 @@ class MyGame(arcade.Window):
         self.human_player = HumanPlayer(paddle=human_paddle)
         self.computer_opponent = ComputerPlayer(paddle=computer_paddle)
 
-        paddles = [self.human_player.paddle, self.computer_opponent.paddle]
-        self.ball_list = [make_ball(paddles=paddles) for _ in range(1)]
-        self.object_list = paddles + self.ball_list
+        self.paddle_list = [self.human_player.paddle, self.computer_opponent.paddle]
+        self.ball_list = [make_ball(paddles=self.paddle_list) for _ in range(INITIAL_NUMBER_OF_BALLS)]
+        self.object_list = self.paddle_list + self.ball_list
 
     def on_draw(self):
         arcade.start_render()
 
         for obj in self.object_list:
             obj.draw()
+            self.draw_points()
 
         if DEBUG:
             self.debug_output()
@@ -66,6 +78,7 @@ class MyGame(arcade.Window):
         self.computer_opponent.react(self.ball_list)
 
         for b in self.get_kills(self.ball_list):
+            self.award_point(b)
             self.ball_list.remove(b)
             self.object_list.remove(b)
 
@@ -82,7 +95,9 @@ class MyGame(arcade.Window):
         pass
 
     def on_mouse_release(self, x, y, button, key_modifiers):
-        pass
+        if len(self.ball_list) <= 0:
+            self.ball_list = [make_ball(paddles=self.paddle_list) for _ in range(1)]
+            self.object_list += self.ball_list
 
     def debug_output(self):
         # arcade.draw_text(f'Paddle2 velocity: {self.human_player.paddle.velocity_y}', 800, 20, arcade.color.WHITE, 14)
