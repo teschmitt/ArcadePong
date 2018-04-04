@@ -6,15 +6,16 @@ from include.game_objects import Paddle, Ball
 from include.game_players import HumanPlayer, ComputerPlayer
 
 
-def make_ball(paddles=[]):
-    vel_x = random.randrange(-400, 401) / 100
+def make_ball(paddles=[], speed=INITIAL_BALL_SPEED):
+    speed = int(speed)
+    vel_x = random.randrange(-speed*100, speed*100+1) / 100
     if vel_x > 0:
-        vel_x += 2
+        vel_x += speed
     else:
-        vel_x -= 2
+        vel_x -= speed
     ball = Ball(
         velocity_x=vel_x,
-        velocity_y=random.randrange(-500, 501) / 100,
+        velocity_y=random.randrange(-speed*100, speed*100+1) / 100,
         paddles=paddles
     )
     return ball
@@ -24,7 +25,7 @@ class MyGame(arcade.Window):
 
     def __init__(self, width, height):
         super().__init__(width, height, 'ArcadePong!')
-        self.set_update_rate(1/60)
+        self.set_update_rate(1/30)
 
         arcade.set_background_color(arcade.color.AMAZON)
 
@@ -33,6 +34,7 @@ class MyGame(arcade.Window):
         self.object_list = []
         self.computer_opponent = None
         self.human_player = None
+        self.ball_init_speed = 0
 
     def __get_kills(self, balls):
         for b in balls:
@@ -53,13 +55,15 @@ class MyGame(arcade.Window):
     def setup(self):
         human_paddle = Paddle(color=arcade.color.BLUE, x=SCREEN_WIDTH-PADDLE_WIDTH//2-PADDLE_MARGIN)
         computer_paddle = Paddle(color=arcade.color.RED, x=PADDLE_WIDTH//2+PADDLE_MARGIN)
+        self.ball_init_speed = INITIAL_BALL_SPEED
 
         self.human_player = HumanPlayer(paddle=human_paddle)
         self.computer_opponent = ComputerPlayer(paddle=computer_paddle)
 
         self.paddle_list = [self.human_player.paddle, self.computer_opponent.paddle]
-        self.ball_list = [make_ball(paddles=self.paddle_list) for _ in range(INITIAL_NUMBER_OF_BALLS)]
+        self.ball_list = [make_ball(paddles=self.paddle_list, speed=self.ball_init_speed) for _ in range(INITIAL_NUMBER_OF_BALLS)]
         self.object_list = self.paddle_list + self.ball_list
+
 
     def on_draw(self):
         arcade.start_render()
@@ -79,6 +83,8 @@ class MyGame(arcade.Window):
 
         for b in self.__get_kills(self.ball_list):
             self.__award_point(b)
+            self.computer_opponent.increase_speed()
+            self.ball_init_speed *= BALL_SPEED_INCREASE
             self.ball_list.remove(b)
             self.object_list.remove(b)
 
@@ -95,15 +101,16 @@ class MyGame(arcade.Window):
         pass
 
     def on_mouse_release(self, x, y, button, key_modifiers):
-        if len(self.ball_list) <= 0:
-            self.ball_list = [make_ball(paddles=self.paddle_list) for _ in range(1)]
+        if len(self.ball_list) < INITIAL_NUMBER_OF_BALLS:
+            print(self.ball_init_speed)
+            self.ball_list = [make_ball(paddles=self.paddle_list, speed=self.ball_init_speed) for _ in range(1)]
             self.object_list += self.ball_list
 
     def debug_output(self):
         # arcade.draw_text(f'Paddle2 velocity: {self.human_player.paddle.velocity_y}', 800, 20, arcade.color.WHITE, 14)
-        arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
-        arcade.draw_text(f'Calc impact pos: {self.computer_opponent.impact_pos}', 800, 20, arcade.color.WHITE, 14)
-
+        # arcade.draw_text(f'Number of balls in game: {len(self.ball_list)}', 800, 40, arcade.color.WHITE, 14)
+        # arcade.draw_text(f'Calc impact pos: {self.computer_opponent.impact_pos}', 800, 20, arcade.color.WHITE, 14)
+        pass
 
 def main():
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT)

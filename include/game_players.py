@@ -72,6 +72,9 @@ class ComputerPlayer(Player):
         else:
             return 0
 
+    def increase_speed(self):
+        self.speed *= OPPONENT_SPEED_INCREASE
+
     def react(self, ball_list):
         if ball_list:
             nearest_ball = self.__get_nearest_ball(ball_list)
