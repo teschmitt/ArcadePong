@@ -34,19 +34,19 @@ class MyGame(arcade.Window):
         self.computer_opponent = None
         self.human_player = None
 
-    def get_kills(self, balls):
+    def __get_kills(self, balls):
         for b in balls:
             if b.x > SCREEN_WIDTH + BALL_KILL_THRESH or \
                     b.x < -BALL_KILL_THRESH:
                 yield b
 
-    def award_point(self, ball):
+    def __award_point(self, ball):
         if ball.x <= BALL_KILL_THRESH:
             self.human_player.points += 1
         else:
             self.computer_opponent.points += 1
 
-    def draw_points(self):
+    def __draw_points(self):
         arcade.draw_text(f'{self.human_player.points}', SCREEN_WIDTH-POINTS_DISPLAY_X_MARGIN, POINTS_DISPLAY_Y, arcade.color.WHITE, 28)
         arcade.draw_text(f'{self.computer_opponent.points}', POINTS_DISPLAY_X_MARGIN, POINTS_DISPLAY_Y, arcade.color.WHITE, 28)
 
@@ -66,7 +66,7 @@ class MyGame(arcade.Window):
 
         for obj in self.object_list:
             obj.draw()
-            self.draw_points()
+            self.__draw_points()
 
         if DEBUG:
             self.debug_output()
@@ -77,8 +77,8 @@ class MyGame(arcade.Window):
 
         self.computer_opponent.react(self.ball_list)
 
-        for b in self.get_kills(self.ball_list):
-            self.award_point(b)
+        for b in self.__get_kills(self.ball_list):
+            self.__award_point(b)
             self.ball_list.remove(b)
             self.object_list.remove(b)
 
